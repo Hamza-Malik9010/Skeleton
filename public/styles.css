@@ -1,0 +1,154 @@
+/* styles.css */
+
+/* Apply a dark, ultra-modern, changing background */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+    color: #ffffff;
+    background: linear-gradient(270deg, #1a1a1a, #333333, #1a1a1a);
+    background-size: 600% 600%;
+    animation: BackgroundAnimation 20s ease infinite;
+  }
+  
+  /* Background animation */
+  @keyframes BackgroundAnimation {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  
+  /* Center content */
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    text-align: center;
+  }
+  
+  /* Header styling */
+  header {
+    margin-bottom: 40px;
+  }
+  
+  header h1 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+  }
+  
+  /* Footer styling */
+  footer {
+    margin-top: 40px;
+    font-size: 0.9em;
+  }
+  
+  /* Form styling */
+  form {
+    margin: 20px 0;
+  }
+  
+  input[type="text"],
+  input[type="password"] {
+    width: 80%;
+    padding: 10px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 5px;
+    background-color: #444;
+    color: #fff;
+  }
+  
+  button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #00bfa5;
+    color: #fff;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  button:hover {
+    background-color: #009688;
+  }
+  
+  /* List and item styling */
+  ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  li {
+    background-color: #222;
+    margin: 10px 0;
+    padding: 15px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  /* Link styling */
+  a {
+    color: #00bfa5;
+    text-decoration: none;
+    font-size: 1.2em;
+  }
+  
+  a:hover {
+    text-decoration: underline;
+  }
+  
+  /* Delete button styling */
+  .delete-button {
+    background-color: #e53935;
+    margin-left: 10px;
+  }
+  
+  .delete-button:hover {
+    background-color: #c62828;
+  }
+  
+  /* Responsive design */
+  @media (max-width: 600px) {
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+    }
+  
+    li {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  
+    button {
+      width: 100%;
+      margin-top: 10px;
+    }
+  }
+  
+  /* Date and time styling */
+  .datetime {
+    font-size: 1em;
+    margin-bottom: 20px;
+  }
+  
+
+  /* styles.css */
+
+.google-button {
+    display: inline-block;
+    background-color: #db4437;
+    color: #fff;
+    padding: 10px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 1em;
+    margin-top: 10px;
+  }
+  
+  .google-button:hover {
+    background-color: #c33d2e;
+  }
+  

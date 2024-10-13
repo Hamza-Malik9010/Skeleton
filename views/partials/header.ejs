@@ -1,0 +1,21 @@
+<!-- header.ejs -->
+<header>
+    <h1>Welcome, <%= typeof Name !== 'undefined' ? Name : 'Guest' %></h1>
+    
+    <div class="datetime">
+      <span id="date-time"></span>
+    </div>
+  </header>
+  
+  <script>
+    function updateDateTime() {
+      const now = new Date();
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      const dateString = now.toLocaleDateString('en-US', options);
+      const timeString = now.toLocaleTimeString('en-US');
+      document.getElementById('date-time').textContent = dateString + ' ' + timeString;
+    }
+    setInterval(updateDateTime, 1000);
+    updateDateTime();
+  </script>
+  
