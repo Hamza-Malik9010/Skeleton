@@ -84,8 +84,8 @@ passport.deserializeUser(async function(id, done) {
 //------------------------------------------------------------------------------------Google Strategy-----------------------------------------------------------------------------------------//
 
 passport.use(new GoogleStrategy({
-    clientID: process.env.CLIENT_ID,
-    clientSecret: process.env.CLIENT_SECRET,
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     callbackURL:"https://977b-182-189-1-53.ngrok-free.app/auth/google/callback",
   },
   async function(accessToken, refreshToken, profile, cb) {
