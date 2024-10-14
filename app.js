@@ -29,7 +29,7 @@ app.use(session({
 
 app.use(passport.initialize());
 app.use(passport.session());
-mongoose.connect("mongodb://127.0.0.1:27017/todolistDB", { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 //mongoose.set("useCreateIndex",true);
 
 
@@ -86,7 +86,7 @@ passport.deserializeUser(async function(id, done) {
 passport.use(new GoogleStrategy({
     clientID: process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET,
-    callbackURL:"http://localhost:3000/auth/google/callback",
+    callbackURL:"https://977b-182-189-1-53.ngrok-free.app/auth/google/callback",
   },
   async function(accessToken, refreshToken, profile, cb) {
     try {
@@ -134,7 +134,7 @@ passport.use(new GoogleStrategy({
 passport.use(new FacebookStrategy({
     clientID: process.env.FACEBOOK_APP_ID, // You'll set this in your .env file
     clientSecret: process.env.FACEBOOK_APP_SECRET, // You'll set this in your .env file
-    callbackURL: "http://localhost:3000/auth/facebook/callback",
+    callbackURL: "https://977b-182-189-1-53.ngrok-free.app/auth/facebook/callback",
     profileFields: ['id', 'displayName'] // Request the necessary profile fields
   },
   async function(accessToken, refreshToken, profile, cb) {
@@ -236,9 +236,9 @@ app.post("/register", function(req, res) {
         req.login(user, function(err) {
           if (err) {
             console.log(err);
-            res.redirect("/login");
+            res.redirect("/login"); // you must have a app.get("/login" , ) route to redirect to. 
           } else {
-            res.redirect("/lists");
+            res.redirect("/lists"); // whatever route/psge/file you want the user to see after registering.
           }
         });
       }
@@ -247,7 +247,7 @@ app.post("/register", function(req, res) {
   
   app.post("/login", passport.authenticate("local", {
     successRedirect: "/lists",
-    failureRedirect: "/login"
+    failureRedirect: "/login"   // whatever route/psge/file you want the user to see after registering.
   }));
   
 
