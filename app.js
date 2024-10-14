@@ -86,7 +86,7 @@ passport.deserializeUser(async function(id, done) {
 passport.use(new GoogleStrategy({
     clientID: process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET,
-    callbackURL:"https://todo-oct-d191a5cd0deb.herokuapp.com//auth/google/callback",
+    callbackURL:"https://todo-oct-d191a5cd0deb.herokuapp.com/auth/google/callback",
   },
   async function(accessToken, refreshToken, profile, cb) {
     try {
@@ -134,7 +134,7 @@ passport.use(new GoogleStrategy({
 passport.use(new FacebookStrategy({
     clientID: process.env.FACEBOOK_APP_ID, // You'll set this in your .env file
     clientSecret: process.env.FACEBOOK_APP_SECRET, // You'll set this in your .env file
-    callbackURL: "https://todo-oct-d191a5cd0deb.herokuapp.com//auth/facebook/callback",
+    callbackURL: "https://todo-oct-d191a5cd0deb.herokuapp.com/auth/facebook/callback",
     profileFields: ['id', 'displayName'] // Request the necessary profile fields
   },
   async function(accessToken, refreshToken, profile, cb) {
