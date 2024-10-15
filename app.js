@@ -29,37 +29,15 @@ app.use(session({
 
 app.use(passport.initialize());
 app.use(passport.session());
-mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
-//mongoose.set("useCreateIndex",true);
-
-
-const todoSchema = new mongoose.Schema({
-    task:String,
-})
-
-const listSchema = new mongoose.Schema({
-    listTitle: String,
-    content: [todoSchema],
-});
+mongoose.connect( "mongodb://127.0.0.1:27017/todolistDB", { useNewUrlParser: true, useUnifiedTopology: true });
+// MONGO_URI in the .env for when you are deploying on Heroku , write MONGO_URI directly onto the Heroku dashboard.           
 
 const userSchema = new mongoose.Schema({
-    username: String, // Add this line
-    lists: [listSchema],
+    username: String, 
     googleId:String,
     facebookId: String,
   });
   
-
-
-
-
-/*    const userSchema = new mongoose.Schema({
-    email:String,
-    password:String,
-    //googleId:String,
-    lists: [listSchema],
-});   */
-
 
 
 userSchema.plugin(passportLocalMongoose);
@@ -81,12 +59,16 @@ passport.deserializeUser(async function(id, done) {
 });
 
 
-//------------------------------------------------------------------------------------Google Strategy-----------------------------------------------------------------------------------------//
 
+
+
+/*    // I HAVE COMMENTED IT BECAUSE IT WILL GIVE AN ERROR UNLESS CLIENT_ID AND CLIENT_SECRET FIELDS ARE SPECIFIED IN THE .env FILE......
+
+//------------------------------------------------------------------------------------Google Strategy-----------------------------------------------------------------------------------------//
 passport.use(new GoogleStrategy({
     clientID: process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET,
-    callbackURL:"https://todo-oct-d191a5cd0deb.herokuapp.com/auth/google/callback",
+    callbackURL:"http://localhost:3000/auth/google/callback",
   },
   async function(accessToken, refreshToken, profile, cb) {
     try {
@@ -114,11 +96,9 @@ passport.use(new GoogleStrategy({
     }
   }));
 
-
   app.get('/auth/google',
     passport.authenticate('google', { scope: ['profile'] })
-  );
-  
+  );  
   app.get('/auth/google/callback', 
     passport.authenticate('google', { failureRedirect: '/login' }),
     function(req, res) {
@@ -128,13 +108,11 @@ passport.use(new GoogleStrategy({
   
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
-
-  
 //--------------------------------------------------------------------------------------Facebook Strategy---------------------------------------------------------------------------------//
 passport.use(new FacebookStrategy({
     clientID: process.env.FACEBOOK_APP_ID, // You'll set this in your .env file
     clientSecret: process.env.FACEBOOK_APP_SECRET, // You'll set this in your .env file
-    callbackURL: "https://todo-oct-d191a5cd0deb.herokuapp.com/auth/facebook/callback",
+    callbackURL: "http://localhost:3000/auth/facebook/callback",
     profileFields: ['id', 'displayName'] // Request the necessary profile fields
   },
   async function(accessToken, refreshToken, profile, cb) {
@@ -162,9 +140,6 @@ passport.use(new FacebookStrategy({
     }
   }
 ));
-
-
-
 // Route to initiate Facebook authentication
 app.get('/auth/facebook',
     passport.authenticate('facebook'));
@@ -176,57 +151,16 @@ app.get('/auth/facebook',
       // Successful authentication, redirect to lists.
       res.redirect('/lists');   // render to whatever route/page/file you wanna render to after successfully authenticating
     });
-  
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
-
-
-/*  passport.use(new GoogleStrategy({
-clientID: process.env.CLIENT_ID,
-clientSecret: process.env.CLIENT_SECRET,
-callbackURL:"http://localhost:3000/auth/google/callback",
-userProfileUrl:"http://www.googleapis.com/oauth2/v3/userinfo"
-},
-function(accessToken,refreshToken,profile,cb){
-    console.log(profile);
-    User.findOrCreate({googleId: profile.id}, function(err,user){
-       if(err) return cb(err,user);
-         // If the user is new, save their display name
-    if (!user.username) {
-        user.username = profile.displayName;
-        user.save(function(err) {
-          return cb(err, user);
-        });
-      } else {
-        return cb(null, user);
-      }
-
-
-    });
-}));
-
 */
-
-
-
-
-
-
-// Route to render the starter page
-
-app.get("/", (req,res) => {
-    res.render("starter")
-});
-
 
 app.get("/register",(req,res) =>{
     res.render("register");
 })
-
 app.get("/login",(req,res)=>{
     res.render("login");
 });
-
 app.post("/register", function(req, res) {
     User.register({ username: req.body.username }, req.body.password, function(err, user) {
       if (err) {
@@ -238,219 +172,16 @@ app.post("/register", function(req, res) {
             console.log(err);
             res.redirect("/login"); // you must have a app.get("/login" , ) route to redirect to. 
           } else {
-            res.redirect("/lists"); // whatever route/psge/file you want the user to see after registering.
+            res.redirect(""); // whatever route/psge/file you want the user to see after registering.
           }
         });
       }
     });
   });
-  
   app.post("/login", passport.authenticate("local", {
-    successRedirect: "/lists",
-    failureRedirect: "/login"   // whatever route/psge/file you want the user to see after registering.
+    successRedirect: "/lists",   // whatever route/psge/file you want the user to see after logging in.
+    failureRedirect: "/login"   
   }));
-  
-
-
-
-
-/*
-
-app.post("/register", (req,res) =>{
-    User.register({username:req.body.username}, req.body.password, function(err,user){
-        if(err){
-            console.log(err);
-            res.redirect("/register");
-        }
-        else{
-            passport.authenticate("local")(req,res,function(){
-                res.redirect("/lists");
-            })
-        }
-    })
-}); 
-
-*/
-
-
-
-
-/*
-
-app.post("/login", (req,res) =>{
-const user = new User({
-    username:req.body.username,
-    password: req.body.password
-});
-req.login(user, function(err){
-    if(err){
-        console.log(err);
-        return nextTick(err);
-    }
-    passport.authenticate("local")(req,res, function(){
-        res.redirect("/lists");
-    })
-})
-});      
-
-*/
-
-
-app.get("/lists", async (req, res) => {
-    if (req.isAuthenticated()) {
-        try {
-            const foundUser = await User.findById(req.user.id);  // Use async/await
-            if (foundUser) {
-                res.render("list", { Lists: foundUser.lists, Name: foundUser.username });
-            }
-        } catch (err) {
-            console.log(err);
-        }
-    } else {
-        res.redirect("/login");
-    }
-});
-
-
-// Del-list Route
-app.post("/del-list", async (req, res) => {
-    if (req.isAuthenticated()) {
-      const listID = req.body.listID;
-  
-      try {
-        await User.findByIdAndUpdate(req.user.id, { $pull: { lists: { _id: listID } } });
-        res.redirect("/lists");
-      } catch (err) {
-        console.log(err);
-        res.redirect("/lists");
-      }
-    } else {
-      res.redirect("/login");
-    }
-  });
-
-
-
-  app.post("/add-list", async (req, res) => {
-    if (req.isAuthenticated()) {
-      const listName = req.body.listname;
-      const newList = {
-        listTitle: listName,
-        content: [] // Initialize with an empty array of tasks
-      };
-  
-      try {
-        await User.findByIdAndUpdate(req.user.id, { $push: { lists: newList } });
-        res.redirect("/lists");
-      } catch (err) {
-        console.log(err);
-        res.redirect("/lists");
-      }
-    } else {
-      res.redirect("/login");
-    }
-  });
-
-
-
-
-
-// app.js
-app.get("/todos/:listID", async (req, res) => {
-    if (req.isAuthenticated()) {
-      const listID = req.params.listID;
-  
-      try {
-        const foundUser = await User.findById(req.user.id);
-        if (foundUser) {
-          const foundList = foundUser.lists.id(listID);
-          if (foundList) {
-            res.render("todo", {
-              todos: foundList.content,
-              Name: req.user.username,
-              listID: listID,
-            });
-          } else {
-            res.redirect("/lists");
-          }
-        }
-      } catch (err) {
-        console.log(err);
-        res.redirect("/lists");
-      }
-    } else {
-      res.redirect("/login");
-    }
-  });
-  
-  
-
-  
-
-
-// app.js
-app.post("/add-todo", async (req, res) => {
-    if (req.isAuthenticated()) {
-      const listID = req.body.listID;
-      const taskText = req.body["task-text"];
-  
-      try {
-        const foundUser = await User.findById(req.user.id);
-        if (foundUser) {
-          const foundList = foundUser.lists.id(listID);
-          if (foundList) {
-            foundList.content.push({ task: taskText });
-            await foundUser.save();
-            res.redirect("/todos/" + listID);
-           
-          } else {
-            res.redirect("/lists");
-          }
-        }
-      } catch (err) {
-        console.log(err);
-        res.redirect("/lists");
-      }
-    } else {
-      res.redirect("/login");
-    }
-  });
-  
-
-
-
-
-
-
-app.post("/del-todo", async (req, res) => {
-    if (req.isAuthenticated()) {
-      const listID = req.body.listID;
-      const todoID = req.body.todo_ID;
-  
-      try {
-        const foundUser = await User.findById(req.user.id);
-        if (foundUser) {
-          const foundList = foundUser.lists.id(listID);  // Find the specific list
-          if (foundList) {
-            foundList.content.pull({ _id: todoID });  // Remove the specific task by ID
-            await foundUser.save();  // Save the changes
-            res.redirect("/todos/" + listID);
-
-          }
-        }
-      } catch (err) {
-        console.log(err);
-        res.redirect("/lists");
-      }
-    } else {
-      res.redirect("/login");
-    }
-  });
-  
-
-
-
-
   app.get('/logout', function(req, res, next) {
     req.logout(function(err) {
       if (err) {
@@ -460,10 +191,18 @@ app.post("/del-todo", async (req, res) => {
       res.redirect('/login');
     });
   });
+// ---------------------------------------------------------------------- write your app here ---------------------------------------------------------------------------//
+
+app.get("/", (req,res) => {
+  res.render("starter") 
+});
 
 
 
 
+
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
 
 app.listen(PORT, () => {
